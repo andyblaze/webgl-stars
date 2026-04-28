@@ -3,12 +3,15 @@ export default class Config {
 
     }
     vertexShader() {
-        return `void main() {
+        return `
+        void main() {
                 gl_Position = vec4(position, 1.0);
-            }`;
+            }
+                `;
         }
     fragmentShader() {
-        return `precision mediump float;
+        return `
+        precision mediump float;
             uniform float time;
             uniform vec2 resolution;
 
@@ -71,6 +74,7 @@ export default class Config {
             col *= glow;
 
             gl_FragColor = vec4(col, 1.0);
-            }`;
+            }
+            `;
     }
 }

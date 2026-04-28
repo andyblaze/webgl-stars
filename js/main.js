@@ -26,14 +26,16 @@ const uniforms = {
   time: { value: 0 },
   resolution: { value: new THREE.Vector2() }
 };
+const vs = config.vertexShader();
+const fs = config.fragmentShader();
 
 //
 // ⭐ STAR (same as before)
 //
 const starMaterial = new THREE.ShaderMaterial({
   uniforms,
-  config.vertexShader(),
-  config.fragmentShader() 
+  vs, //config.vertexShader(),
+  fs //config.fragmentShader() 
 });
 
 const star = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), starMaterial);
