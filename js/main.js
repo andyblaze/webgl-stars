@@ -34,28 +34,26 @@ const uniforms = {
   brightness: { value: 0 }
 };
 
-//
-// ⭐ STAR (same as before)
-//
-const starShader = config.shader("star");
 const profile = new StarProfile(10); // 10 is placeholder
 uniforms.flowDir.value = new THREE.Vector2(
   profile.motion.flowDir.x,
   profile.motion.flowDir.y
 );
-
 uniforms.flowSpeed.value = profile.motion.flowSpeed;
-
 uniforms.colorA.value = new THREE.Vector3(...profile.color.colorA);
 uniforms.colorB.value = new THREE.Vector3(...profile.color.colorB);
-
 uniforms.brightness.value = profile.energy.brightness;
+
+const starShader = config.shader("star");
 const starMaterial = new THREE.ShaderMaterial({
   uniforms,
   vertexShader: starShader.vertex,
   fragmentShader: starShader.fragment 
 });
 
+//
+// ⭐ STAR (same as before)
+//
 const star = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), starMaterial);
 scene.add(star);
 
