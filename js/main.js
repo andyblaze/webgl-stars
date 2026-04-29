@@ -24,7 +24,8 @@ resize();
 
 const uniforms = {
   time: { value: 0 },
-  resolution: { value: new THREE.Vector2() }
+  resolution: { value: new THREE.Vector2() },
+  seed: { value: Math.random() * 1000 } // or your deterministic seed ( universe.seedForSystem(); )
 };
 
 

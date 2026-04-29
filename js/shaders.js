@@ -8,6 +8,7 @@ export const shaders = {
         precision mediump float;
             uniform float time;
             uniform vec2 resolution;
+            uniform float seed;
 
             float hash(vec2 p) {
             return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453);
@@ -45,12 +46,17 @@ export const shaders = {
             uv = uv * 2.0 - 1.0;
             uv.x *= resolution.x / resolution.y;
 
+            vec2 flowDir = normalize(vec2(
+                sin(seed * 3.1),
+                cos(seed * 5.7)
+            ));
+
             float r = length(uv);
             if (r > 1.0) discard;
 
             vec2 warp = vec2(
-                fbm(uv * 2.0 + time * 0.2),
-                fbm(uv * 2.0 - time * 0.15)
+                fbm(uv * 2.0 + flowDir * time * 0.2),
+                fbm(uv * 2.0 - flowDir * time * 0.15)
             );
 
             vec2 p = uv + warp * 0.3;
@@ -76,87 +82,86 @@ export const shaders = {
         void main() {
         vUv = uv;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }`,
+        fragment: `
+        precision mediump float;
+
+        varying vec2 vUv;
+        uniform vec2 resolution;
+
+        // --- basic smooth noise ---
+        float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453);
         }
-    `,
-    fragment: `
-    precision mediump float;
 
-    varying vec2 vUv;
-    uniform vec2 resolution;
+        float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
 
-    // --- basic smooth noise ---
-    float hash(vec2 p) {
-      return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453);
-    }
+        float a = hash(i);
+        float b = hash(i + vec2(1.0, 0.0));
+        float c = hash(i + vec2(0.0, 1.0));
+        float d = hash(i + vec2(1.0, 1.0));
 
-    float noise(vec2 p) {
-      vec2 i = floor(p);
-      vec2 f = fract(p);
+        vec2 u = f * f * (3.0 - 2.0 * f);
 
-      float a = hash(i);
-      float b = hash(i + vec2(1.0, 0.0));
-      float c = hash(i + vec2(0.0, 1.0));
-      float d = hash(i + vec2(1.0, 1.0));
+        return mix(a, b, u.x) +
+                (c - a)*u.y*(1.0 - u.x) +
+                (d - b)*u.x*u.y;
+        }
 
-      vec2 u = f * f * (3.0 - 2.0 * f);
+        float fbm(vec2 p) {
+        float v = 0.0;
+        float a = 0.5;
+        for (int i = 0; i < 4; i++) {
+            v += a * noise(p);
+            p *= 2.0;
+            a *= 0.5;
+        }
+        return v;
+        }
 
-      return mix(a, b, u.x) +
-             (c - a)*u.y*(1.0 - u.x) +
-             (d - b)*u.x*u.y;
-    }
+        void main() {
+        // --- aspect-corrected coords ---
+        vec2 uv = vUv * 2.0 - 1.0;
+        
+        uv.x *= resolution.x / resolution.y;
 
-    float fbm(vec2 p) {
-      float v = 0.0;
-      float a = 0.5;
-      for (int i = 0; i < 4; i++) {
-        v += a * noise(p);
-        p *= 2.0;
-        a *= 0.5;
-      }
-      return v;
-    }
+        float r = length(uv);
+        if (r > 1.0) discard;
 
-    void main() {
-      // --- aspect-corrected coords ---
-      vec2 uv = vUv * 2.0 - 1.0;
-      
-      uv.x *= resolution.x / resolution.y;
+        // --- fake sphere normal ---
+        vec3 normal = normalize(vec3(uv, sqrt(1.0 - r*r)));
 
-      float r = length(uv);
-      if (r > 1.0) discard;
+        // --- light direction ---
+        vec3 lightDir = normalize(vec3(-0.6, 0.4, 1.0));
 
-      // --- fake sphere normal ---
-      vec3 normal = normalize(vec3(uv, sqrt(1.0 - r*r)));
+        float diffuse = dot(normal, lightDir);
+        diffuse = clamp(diffuse, 0.0, 1.0);
 
-      // --- light direction ---
-      vec3 lightDir = normalize(vec3(-0.6, 0.4, 1.0));
+        // --- surface (CONTINENTS, not static) ---
+        float continents = fbm(uv * 2.0);
 
-      float diffuse = dot(normal, lightDir);
-      diffuse = clamp(diffuse, 0.0, 1.0);
+        float detail = fbm(uv * 6.0) * 0.3;
 
-      // --- surface (CONTINENTS, not static) ---
-      float continents = fbm(uv * 2.0);
+        float landMask = smoothstep(0.45, 0.55, continents + detail);
 
-      float detail = fbm(uv * 6.0) * 0.3;
+        vec3 ocean = vec3(0.05, 0.15, 0.35);
+        vec3 land  = vec3(0.2, 0.5, 0.25);
 
-      float landMask = smoothstep(0.45, 0.55, continents + detail);
+        vec3 baseColor = mix(ocean, land, landMask);
 
-      vec3 ocean = vec3(0.05, 0.15, 0.35);
-      vec3 land  = vec3(0.2, 0.5, 0.25);
+        // --- lighting (stronger contrast) ---
+        vec3 col = baseColor * (diffuse * 0.9 + 0.1);
 
-      vec3 baseColor = mix(ocean, land, landMask);
+        // night side fade
+        col *= smoothstep(-0.2, 0.3, diffuse);
 
-      // --- lighting (stronger contrast) ---
-      vec3 col = baseColor * (diffuse * 0.9 + 0.1);
+        // --- atmosphere rim ---
+        float rim = pow(1.0 - r, 3.0);
+        col += vec3(0.3, 0.5, 1.0) * rim * 0.4;
 
-      // night side fade
-      col *= smoothstep(-0.2, 0.3, diffuse);
-
-      // --- atmosphere rim ---
-      float rim = pow(1.0 - r, 3.0);
-      col += vec3(0.3, 0.5, 1.0) * rim * 0.4;
-
-      gl_FragColor = vec4(col, 1.0);
-    }`
+        gl_FragColor = vec4(col, 1.0);
+        }`
     }
 }
