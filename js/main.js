@@ -1,6 +1,7 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js";
 import Shaders from "./shaders.js";
 import Config from "./config.js";
+import StarProfile from "./star-prifile.js";
 
 const config = new Config(new Shaders()); 
 
@@ -26,13 +27,29 @@ resize();
 const uniforms = {
   time: { value: 0 },
   resolution: { value: new THREE.Vector2() },
-  seed: { value: Math.random() * 1000 } // or your deterministic seed ( universe.seedForSystem(); )
+  flowDir: { value: 0 },
+  flowSpeed: { value: 0 },
+  colorA: { value: 0 },
+  colorB: { value: 0 },
+  brightness: { value: 0 }
 };
 
 //
 // ⭐ STAR (same as before)
 //
 const starShader = config.shader("star");
+const profile = new StarProfile(10); // 10 is placeholder
+uniforms.flowDir.value = new THREE.Vector2(
+  profile.motion.flowDir.x,
+  profile.motion.flowDir.y
+);
+
+uniforms.flowSpeed.value = profile.motion.flowSpeed;
+
+uniforms.colorA.value = new THREE.Vector3(...profile.color.colorA);
+uniforms.colorB.value = new THREE.Vector3(...profile.color.colorB);
+
+uniforms.brightness.value = profile.energy.brightness;
 const starMaterial = new THREE.ShaderMaterial({
   uniforms,
   vertexShader: starShader.vertex,
