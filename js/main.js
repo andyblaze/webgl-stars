@@ -1,7 +1,8 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js";
+import Shaders from "./shaders.js";
 import Config from "./config.js";
 
-const config = new Config(); 
+const config = new Config(new Shaders()); 
 
 const scene = new THREE.Scene();
 const camera = new THREE.Camera();

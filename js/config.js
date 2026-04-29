@@ -1,8 +1,10 @@
-import { shaders } from "./shaders.js";
+
 
 export default class Config {
-    constructor() {
-        this.shaders = shaders;
+    constructor(shaders) {
+        this.shaders = {};
+        for ( const [key, val] of Object.entries(shaders) )
+            this.shaders[key] = val;
     }
     vertexShader(type) {
         return this.shaders[type].vertex;

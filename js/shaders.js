@@ -1,5 +1,6 @@
-export const shaders = {
-    "star": {
+export default class Shaders {
+    constructor() {
+        this.star = {
         "vertex": `
             void main() {
                 gl_Position = vec4(position, 1.0);
@@ -76,7 +77,7 @@ export const shaders = {
             gl_FragColor = vec4(col, 1.0);
             }`
     },
-    "planet": {
+        this.planet = {
         vertex: `
         varying vec2 vUv;
         void main() {
@@ -163,5 +164,6 @@ export const shaders = {
 
         gl_FragColor = vec4(col, 1.0);
         }`
+    }
     }
 }
