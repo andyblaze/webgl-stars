@@ -48,38 +48,54 @@ export default class Shaders {
                     ${this.commonCode}
 
                     void main() {
-                    vec2 uv = gl_FragCoord.xy / resolution.xy;
-                    uv = uv * 2.0 - 1.0;
-                    uv.x *= resolution.x / resolution.y;
 
-                    vec2 flowDir = normalize(vec2(
-                        sin(seed * 3.1),
-                        cos(seed * 5.7)
-                    ));
+                        vec2 uv = gl_FragCoord.xy / resolution.xy;
+                        uv = uv * 2.0 - 1.0;
+                        uv.x *= resolution.x / resolution.y;
 
-                    float r = length(uv);
-                    if (r > 1.0) discard;
+                        float r = length(uv);
+                        if (r > 1.0) discard;
 
-                    vec2 warp = vec2(
-                        fbm(uv * 2.0 + flowDir * time * 0.2),
-                        fbm(uv * 2.0 - flowDir * time * 0.15)
-                    );
+                        // ---------------------------
+                        // 🌪️ Seeded orientation (FULL CIRCLE)
+                        // ---------------------------
+                        float angle = seed * 6.2831853;
+                        vec2 flowDir = vec2(cos(angle), sin(angle));
 
-                    vec2 p = uv + warp * 0.3;
+                        // ---------------------------
+                        // ⏱️ Seeded motion variation (IMPORTANT FIX)
+                        // ---------------------------
+                        float t1 = time * (0.15 + fract(sin(seed * 12.9898)) * 0.25);
+                        float t2 = time * (0.10 + fract(cos(seed * 78.233)) * 0.25);
 
-                    float n =
-                        fbm(p * 1.5 + time * 0.2) * 0.6 +
-                        fbm(p * 3.0 - time * 0.4) * 0.3 +
-                        fbm(p * 6.0 + time * 0.8) * 0.1;
+                        // ---------------------------
+                        // 🌊 Warp field (now broken per-star)
+                        // ---------------------------
+                        vec2 warp = vec2(
+                            fbm(uv * 2.0 + flowDir * t1),
+                            fbm(uv * 2.0 - flowDir * t2)
+                        );
 
-                    float glow = smoothstep(1.0, 0.0, r);
-                    float brightness = n * glow;
+                        vec2 p = uv + warp * 0.3;
 
-                    vec3 col = mix(vec3(1.0, 0.3, 0.05), vec3(1.0, 0.8, 0.3), brightness);
-                    col = mix(col, vec3(1.0), pow(brightness, 3.0));
-                    col *= glow;
+                        float n =
+                            fbm(p * 1.5 + time * 0.2) * 0.6 +
+                            fbm(p * 3.0 - time * 0.4) * 0.3 +
+                            fbm(p * 6.0 + time * 0.8) * 0.1;
 
-                    gl_FragColor = vec4(col, 1.0);
+                        float glow = smoothstep(1.0, 0.0, r);
+                        float brightness = n * glow;
+
+                        vec3 col = mix(
+                            vec3(1.0, 0.3, 0.05),
+                            vec3(1.0, 0.8, 0.3),
+                            brightness
+                        );
+
+                        col = mix(col, vec3(1.0), pow(brightness, 3.0));
+                        col *= glow;
+
+                        gl_FragColor = vec4(col, 1.0);
                     }`
                 },
             "planet" : {

@@ -29,8 +29,6 @@ const uniforms = {
   seed: { value: Math.random() * 1000 } // or your deterministic seed ( universe.seedForSystem(); )
 };
 
-
-
 //
 // ⭐ STAR (same as before)
 //
