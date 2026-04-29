@@ -43,7 +43,13 @@ export default class Shaders {
                     precision mediump float;
                     uniform float time;
                     uniform vec2 resolution;
-                    uniform float seed;
+                    uniform vec2 flowDir;
+uniform float flowSpeed;
+
+uniform vec3 colorA;
+uniform vec3 colorB;
+
+uniform float brightness;
 
                     ${this.commonCode}
 
@@ -56,25 +62,16 @@ export default class Shaders {
                         float r = length(uv);
                         if (r > 1.0) discard;
 
-                        // ---------------------------
-                        // 🌪️ Seeded orientation (FULL CIRCLE)
-                        // ---------------------------
-                        float angle = seed * 6.2831853;
-                        vec2 flowDir = vec2(cos(angle), sin(angle));
-
-                        // ---------------------------
-                        // ⏱️ Seeded motion variation (IMPORTANT FIX)
-                        // ---------------------------
-                        float t1 = time * (0.15 + fract(sin(seed * 12.9898)) * 0.25);
-                        float t2 = time * (0.10 + fract(cos(seed * 78.233)) * 0.25);
+float t1 = time * flowSpeed;
+float t2 = time * (flowSpeed * 0.8 + 0.05);
 
                         // ---------------------------
                         // 🌊 Warp field (now broken per-star)
                         // ---------------------------
                         vec2 warp = vec2(
-                            fbm(uv * 2.0 + flowDir * t1),
-                            fbm(uv * 2.0 - flowDir * t2)
-                        );
+    fbm(uv * 2.0 + flowDir * t1),
+    fbm(uv * 2.0 - flowDir * t2)
+);
 
                         vec2 p = uv + warp * 0.3;
 
@@ -84,16 +81,11 @@ export default class Shaders {
                             fbm(p * 6.0 + time * 0.8) * 0.1;
 
                         float glow = smoothstep(1.0, 0.0, r);
-                        float brightness = n * glow;
+                        float intensity = n * glow;
 
-                        vec3 col = mix(
-                            vec3(1.0, 0.3, 0.05),
-                            vec3(1.0, 0.8, 0.3),
-                            brightness
-                        );
-
-                        col = mix(col, vec3(1.0), pow(brightness, 3.0));
-                        col *= glow;
+                        vec3 col = mix(colorA, colorB, intensity);
+col = mix(col, vec3(1.0), pow(intensity, 3.0));
+col *= glow * brightness;
 
                         gl_FragColor = vec4(col, 1.0);
                     }`

@@ -49,14 +49,15 @@ export default class StarProfile {
 
     let colorA, colorB;
 
+    // we need a bit more randomness in types - some at all for blue ! :)
     if (type < 0.33) {
       // red/orange dwarf
       colorA = [1.0, 0.3 + r() * 0.2, 0.05];
       colorB = [1.0, 0.7, 0.2];
     } else if (type < 0.66) {
       // yellow star
-      colorA = [1.0, 0.6, 0.1];
-      colorB = [1.0, 0.9, 0.4];
+      colorA = [1.0, 0.6 + r() * 0.2, 0.1];
+      colorB = [1.0, 0.85 + r() * 0.1, 0.3 + r() * 0.1];
     } else {
       // blue/white
       colorA = [0.6, 0.8, 1.0];

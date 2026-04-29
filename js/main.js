@@ -27,14 +27,17 @@ resize();
 const uniforms = {
   time: { value: 0 },
   resolution: { value: new THREE.Vector2() },
-  flowDir: { value: 0 },
+
+  flowDir: { value: new THREE.Vector2() },
   flowSpeed: { value: 0 },
-  colorA: { value: 0 },
-  colorB: { value: 0 },
-  brightness: { value: 0 }
+
+  colorA: { value: new THREE.Vector3() },
+  colorB: { value: new THREE.Vector3() },
+
+  brightness: { value: 1 }
 };
 
-const profile = new StarProfile(10); // 10 is placeholder
+const profile = new StarProfile(1021); // 10 is placeholder
 uniforms.flowDir.value = new THREE.Vector2(
   profile.motion.flowDir.x,
   profile.motion.flowDir.y
