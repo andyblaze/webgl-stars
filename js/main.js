@@ -25,42 +25,68 @@ window.addEventListener("resize", resize);
 resize();
 
 class StarUniforms {
-  constructor() {
+  constructor(three) {
+    this.three = three;
     this._data = {
       time: { value: 0 },
-      resolution: { value: new THREE.Vector2() },
+      resolution: { value: new three.Vector2() },
 
-      flowDir: { value: new THREE.Vector2() },
+      flowDir: { value: new three.Vector2() },
       flowSpeed: { value: 0 },
 
-      colorA: { value: new THREE.Vector3() },
-      colorB: { value: new THREE.Vector3() },
+      colorA: { value: new three.Vector3() },
+      colorB: { value: new three.Vector3() },
 
       brightness: { value: 1 }
     }
   }
-  setData(key, val) {
-    this._data[key].value = val;
+setData(key, val) {
+  const u = this._data[key];
+  if (!u) return;
+
+  const target = u.value;
+
+  // numbers (float uniforms)
+  if (typeof target === "number") {
+    u.value = val;
+    return;
   }
-  setColor(key, val) {
-    this._data[key].value = new THREE.Vector3(...val);
+
+  // arrays → [x,y] or [x,y,z]
+  if (Array.isArray(val)) {
+    target.set(...val);
+    return;
   }
+
+  // objects → {x,y} or {x,y,z}
+  if (val && typeof val === "object") {
+    target.set(
+      val.x ?? 0,
+      val.y ?? 0,
+      val.z ?? 0
+    );
+    return;
+  }
+
+  // fallback
+  u.value = val;
+}
+apply(profile) {
+const data = profile.toUniforms();
+
+for ( const key in data ) {
+  this.setData(key, data[key]);
+}
+}
   data() {
     return this._data;
   }
 }
 
-const starUniforms = new StarUniforms();
+const starUniforms = new StarUniforms(THREE);
 
 const starProfile = new StarProfile(1); // 10 is placeholder
-starUniforms.setData("flowDir", new THREE.Vector2(
-  starProfile.flowDirX(),
-  starProfile.flowDirY()
-));
-starUniforms.setData("flowSpeed", starProfile.flowSpeed());
-starUniforms.setColor("colorA", starProfile.colorA());
-starUniforms.setColor("colorB", starProfile.colorB());
-starUniforms.setData("brightness", starProfile.brightness());
+starUniforms.apply(starProfile);
 
 const uniforms = starUniforms.data();
 

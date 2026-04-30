@@ -8,10 +8,22 @@ export default class StarProfile {
     this.color = this.generateColor();
     this.energy = this.generateEnergy();
   }
+toUniforms() {
+  return {
+    flowDir: this.motion.flowDir,
+    flowSpeed: this.motion.flowSpeed,
+    colorA: this.color.colorA,
+    colorB: this.color.colorB,
+    brightness: this.energy.brightness
+  };
+}
   flowSpeed() {
     return this.motion.flowSpeed;
   }
-  flowDirX() {
+  flowDir() {
+    return this.motion.flowDir;
+  }
+  flowDirX() { 
     return this.motion.flowDir.x;
   }
   flowDirY() {
@@ -44,10 +56,10 @@ export default class StarProfile {
     const r = this._rng;
 
     const angle = r() * Math.PI * 2.0;
-    const flowDir = {
-      x: Math.cos(angle),
-      y: Math.sin(angle)
-    };
+    const flowDir = [
+       Math.cos(angle),
+       Math.sin(angle)
+    ];
 
     return {
       flowDir,
