@@ -1,23 +1,13 @@
-export default class PlanetProfile {
-  constructor(seed, starProfile) {
-    this.seed = seed;
-    this.star = starProfile;
+import AstroBodyProfile from "./astrobody-profile.js";
 
-    this._rng = this.createRNG(seed);
+export default class PlanetProfile extends AstroBodyProfile {
+  constructor(seed, starProfile) {
+    super(seed);
+    this.star = starProfile;
 
     this.type = this.pickType();
     this.size = this.generateSize();
     this.color = this.generateColor();
-  }
-
-  // -------------------------
-  // RNG (same style as StarProfile)
-  // -------------------------
-  createRNG(seed) {
-    return function () {
-      seed = Math.sin(seed * 9999.0) * 43758.5453;
-      return seed - Math.floor(seed);
-    };
   }
 
   // -------------------------

@@ -1,8 +1,8 @@
-export default class StarProfile {
-  constructor(seed) {
-    this.seed = seed;
+import AstroBodyProfile from "./astrobody-profile.js";
 
-    this._rng = this.createRNG(seed);
+export default class StarProfile extends AstroBodyProfile {
+  constructor(seed) {
+    super(seed);
 
     this.motion = this.generateMotion();
     this.color = this.generateColor();
@@ -17,37 +17,7 @@ toUniforms() {
     brightness: this.energy.brightness
   };
 }
-  flowSpeed() {
-    return this.motion.flowSpeed;
-  }
-  flowDir() {
-    return this.motion.flowDir;
-  }
-  flowDirX() { 
-    return this.motion.flowDir.x;
-  }
-  flowDirY() {
-    return this.motion.flowDir.y;
-  }
-  colorA() {
-    return this.color.colorA;
-  }
-  colorB() {
-    return this.color.colorB;
-  }
-  brightness() {
-    return this.energy.brightness;
-  }
 
-  // -------------------------
-  // Deterministic RNG
-  // -------------------------
-  createRNG(seed) {
-    return function () {
-      seed = Math.sin(seed * 9999.0) * 43758.5453;
-      return seed - Math.floor(seed);
-    };
-  }
 
   // -------------------------
   // 🌪 Motion
