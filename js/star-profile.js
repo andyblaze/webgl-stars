@@ -7,8 +7,6 @@ export default class StarProfile {
     this.motion = this.generateMotion();
     this.color = this.generateColor();
     this.energy = this.generateEnergy();
-    this.colorA = this.color.colorA;
-    this.colorB = this.color.colorB;
   }
   flowSpeed() {
     return this.motion.flowSpeed;
@@ -19,12 +17,12 @@ export default class StarProfile {
   flowDirY() {
     return this.motion.flowDir.y;
   }
-  /*colorA() {
-    return { ...this.color.colorA };
-  }*/
-  /*colorB() {
-    return { ...this.color.colorB };
-  }*/
+  colorA() {
+    return this.color.colorA;
+  }
+  colorB() {
+    return this.color.colorB;
+  }
   brightness() {
     return this.energy.brightness;
   }

@@ -58,8 +58,8 @@ starUniforms.setData("flowDir", new THREE.Vector2(
   starProfile.flowDirY()
 ));
 starUniforms.setData("flowSpeed", starProfile.flowSpeed());
-starUniforms.setColor("colorA", starProfile.colorA);
-starUniforms.setColor("colorB", starProfile.colorB);
+starUniforms.setColor("colorA", starProfile.colorA());
+starUniforms.setColor("colorB", starProfile.colorB());
 starUniforms.setData("brightness", starProfile.brightness());
 
 const uniforms = starUniforms.data();
