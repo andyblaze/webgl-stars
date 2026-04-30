@@ -84,43 +84,42 @@ for ( const key in data ) {
 }
 
 class Star {
-  static create(three, uniforms, profile, shader) {
-    uniforms.apply(profile);
-    const u = uniforms.data();
-const starMaterial = new three.ShaderMaterial({
-  u,
-  vertexShader: shader.vertex,
-  fragmentShader: shader.fragment 
-});
+  static create(three, uniforms, shader) {
+
+    const starMaterial = new three.ShaderMaterial({
+        uniforms,
+        vertexShader: shader.vertex,
+        fragmentShader: shader.fragment 
+    });
     return new three.Mesh(new three.PlaneGeometry(2, 2), starMaterial);
   }
 }
 
 const starUniforms = new StarUniforms(THREE);
 
-const starProfile = new StarProfile(1); // 10 is placeholder
-starUniforms.apply(starProfile);
+//const starProfile = new StarProfile(1); // 10 is placeholder
+starUniforms.apply(new StarProfile(1));
 
 const uniforms = starUniforms.data();
 
-const starShader = config.shader("star");
+/*const starShader = config.shader("star");
 const starMaterial = new THREE.ShaderMaterial({
   uniforms,
   vertexShader: starShader.vertex,
   fragmentShader: starShader.fragment 
-});
+});*/
 
 //
 // ⭐ STAR (same as before)
 //
-const star = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), starMaterial);
-scene.add(star);
-//const star = Star.create(THREE, starUniforms, new StarProfile(1), config.shader("star")); 
+//const star = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), starMaterial);
 
+const star = Star.create(THREE, uniforms, config.shader("star")); 
+scene.add(star);
 //
 // 🌍 PLANET (simple starter shader)
 //
-/*const planetShader = config.shader("planet");
+const planetShader = config.shader("planet");
 const planetMaterial = new THREE.ShaderMaterial({
   uniforms,
   transparent: true,
@@ -138,7 +137,7 @@ const planet = new THREE.Mesh(
 
 // position near (200,200) in screen-ish space
 planet.position.set(0.6, -0.4, 0); // tweak as needed
-scene.add(planet);*/
+scene.add(planet);
 
 //
 // 🎬 LOOP
