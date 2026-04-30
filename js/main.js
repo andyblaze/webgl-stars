@@ -2,6 +2,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
 import Shaders from "./shaders.js";
 import Config from "./config.js";
 import StarProfile from "./star-profile.js";
+import DeltaReport from "./delta-report.js";
 
 const config = new Config(new Shaders()); 
 
@@ -150,6 +151,7 @@ function animate(timestamp) {
   );
 
   renderer.render(scene, camera);
+  DeltaReport.log(timestamp);
   requestAnimationFrame(animate);
 }
 
