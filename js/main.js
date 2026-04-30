@@ -1,7 +1,7 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js";
 import Shaders from "./shaders.js";
 import Config from "./config.js";
-import StarProfile from "./star-prifile.js";
+import StarProfile from "./star-profile.js";
 
 const config = new Config(new Shaders()); 
 
@@ -24,28 +24,45 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
-const uniforms = {
-  time: { value: 0 },
-  resolution: { value: new THREE.Vector2() },
+class StarUniforms {
+  constructor() {
+    this._data = {
+      time: { value: 0 },
+      resolution: { value: new THREE.Vector2() },
 
-  flowDir: { value: new THREE.Vector2() },
-  flowSpeed: { value: 0 },
+      flowDir: { value: new THREE.Vector2() },
+      flowSpeed: { value: 0 },
 
-  colorA: { value: new THREE.Vector3() },
-  colorB: { value: new THREE.Vector3() },
+      colorA: { value: new THREE.Vector3() },
+      colorB: { value: new THREE.Vector3() },
 
-  brightness: { value: 1 }
-};
+      brightness: { value: 1 }
+    }
+  }
+  setData(key, val) {
+    this._data[key].value = val;
+  }
+  setColor(key, val) {
+    this._data[key].value = new THREE.Vector3(...val);
+  }
+  data() {
+    return this._data;
+  }
+}
 
-const profile = new StarProfile(1021); // 10 is placeholder
-uniforms.flowDir.value = new THREE.Vector2(
-  profile.motion.flowDir.x,
-  profile.motion.flowDir.y
-);
-uniforms.flowSpeed.value = profile.motion.flowSpeed;
-uniforms.colorA.value = new THREE.Vector3(...profile.color.colorA);
-uniforms.colorB.value = new THREE.Vector3(...profile.color.colorB);
-uniforms.brightness.value = profile.energy.brightness;
+const starUniforms = new StarUniforms();
+
+const starProfile = new StarProfile(1); // 10 is placeholder
+starUniforms.setData("flowDir", new THREE.Vector2(
+  starProfile.flowDirX(),
+  starProfile.flowDirY()
+));
+starUniforms.setData("flowSpeed", starProfile.flowSpeed());
+starUniforms.setColor("colorA", starProfile.colorA);
+starUniforms.setColor("colorB", starProfile.colorB);
+starUniforms.setData("brightness", starProfile.brightness());
+
+const uniforms = starUniforms.data();
 
 const starShader = config.shader("star");
 const starMaterial = new THREE.ShaderMaterial({
