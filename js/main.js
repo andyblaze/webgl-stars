@@ -32,7 +32,7 @@ class Universe {
             time: { value: 0 },
             resolution: { value: new three.Vector2() }
         };
-    }
+    } 
     update(timestamp, renderer) {
         this.uniforms.time.value = timestamp * 0.001;
         this.uniforms.resolution.value.set(
