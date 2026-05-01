@@ -26,15 +26,65 @@ window.addEventListener("resize", resize);
 resize();
 
 class Universe {
-    constructor() {
+    constructor(three) {
         this.systems = [];
         this.uniforms = {
             time: { value: 0 },
             resolution: { value: new three.Vector2() }
         };
     }
+    update(timestamp, renderer) {
+        this.uniforms.time.value = timestamp * 0.001;
+        this.uniforms.resolution.value.set(
+            renderer.domElement.width,
+            renderer.domElement.height
+        );
+    }
+
+    addSystem(sys) {
+        sys.setGlobals(this.uniforms);
+        this.systems.push(sys);
+    }
+}
+
+class System {
+    constructor(s) {
+        this.star = s;
+        this.planets = [];
+    }
+    setGlobals(globals) {
+        this.globalUniforms = globals;
+
+        this.star.setGlobals(globals);
+
+        for ( const p of this.planets ) {
+            p.setGlobals(globals);
+        }
+    }
     update() {
-        
+
+    }
+    addPlanet(p) {
+        p.setGlobals(this.globalUniforms);
+        this.planets.push(p);
+    }
+}
+
+class Star {
+    constructor() {
+
+    }
+    setGlobals(globals) {
+        this.globalUniforms = globals;
+    }
+}
+
+class Planet {
+    constructor() {
+
+    }
+    setGlobals(globals) {
+        this.globalUniforms = globals;
     }
 }
 
