@@ -84,17 +84,21 @@ for ( const key in data ) {
   }
 }
 
-class Star {
-  static create(three, uniforms, shader) {
-
-    const starMaterial = new three.ShaderMaterial({
-        uniforms,
-        vertexShader: shader.vertex,
-        fragmentShader: shader.fragment 
-    });
-    return new three.Mesh(new three.PlaneGeometry(2, 2), starMaterial);
-  }
+class AstroBodyFactory {
+    constructor(three) {
+        this.three = three;
+    }
+    create(uniforms, shader) {
+        const starMaterial = new this.three.ShaderMaterial({
+            uniforms,
+            vertexShader: shader.vertex,
+            fragmentShader: shader.fragment 
+        });
+        return new this.three.Mesh(new this.three.PlaneGeometry(2, 2), starMaterial);
+    }
 }
+
+const factory = new AstroBodyFactory(THREE);
 
 const starUniforms = new StarUniforms(THREE);
 
@@ -115,7 +119,7 @@ const starMaterial = new THREE.ShaderMaterial({
 //
 //const star = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), starMaterial);
 
-const star = Star.create(THREE, uniforms, config.shader("star")); 
+const star = factory.create(uniforms, config.shader("star")); 
 scene.add(star);
 //
 // 🌍 PLANET (simple starter shader)
