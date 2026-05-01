@@ -25,6 +25,19 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
+class Universe {
+    constructor() {
+        this.systems = [];
+        this.uniforms = {
+            time: { value: 0 },
+            resolution: { value: new three.Vector2() }
+        };
+    }
+    update() {
+        
+    }
+}
+
 class StarUniforms {
   constructor(three) {
     this.three = three;
@@ -102,25 +115,14 @@ const factory = new AstroBodyFactory(THREE);
 
 const starUniforms = new StarUniforms(THREE);
 
-//const starProfile = new StarProfile(1); // 10 is placeholder
-starUniforms.apply(new StarProfile(1));
+const starProfile = new StarProfile(1); // 10 is placeholder
+starUniforms.apply(starProfile);
 
 const uniforms = starUniforms.data();
 
-/*const starShader = config.shader("star");
-const starMaterial = new THREE.ShaderMaterial({
-  uniforms,
-  vertexShader: starShader.vertex,
-  fragmentShader: starShader.fragment 
-});*/
-
-//
-// ⭐ STAR (same as before)
-//
-//const star = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), starMaterial);
-
 const star = factory.create(uniforms, config.shader("star")); 
 scene.add(star);
+
 //
 // 🌍 PLANET (simple starter shader)
 //
