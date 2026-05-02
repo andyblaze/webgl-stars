@@ -2,6 +2,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.m
 import Shaders from "./shaders.js";
 import Config from "./config.js";
 import StarProfile from "./star-profile.js";
+import StarUniforms from "./star-uniforms.js";
 import DeltaReport from "./delta-report.js";
 
 const config = new Config(new Shaders()); 
@@ -70,15 +71,6 @@ class System {
     }
 }
 
-class Star {
-    constructor() {
-
-    }
-    setGlobals(globals) {
-        this.globalUniforms = globals;
-    }
-}
-
 class Planet {
     constructor() {
 
@@ -88,95 +80,76 @@ class Planet {
     }
 }
 
-class StarUniforms {
-  constructor(three) {
-    this.three = three;
-    this._data = {
-      time: { value: 0 },
-      resolution: { value: new three.Vector2() },
+class Star {
+    constructor(cfg) {
+        this.profile = cfg.profile;
+        const suniforms = new StarUniforms(cfg.three);
+        this.uniforms = suniforms.apply(this.profile).data();
 
-      flowDir: { value: new three.Vector2() },
-      flowSpeed: { value: 0 },
-
-      colorA: { value: new three.Vector3() },
-      colorB: { value: new three.Vector3() },
-
-      brightness: { value: 1 }
+        const material = new cfg.three.ShaderMaterial({
+            uniforms: this.uniforms,
+            vertexShader: cfg.shader.vertex,
+            fragmentShader: cfg.shader.fragment 
+        });
+        this.mesh = new cfg.three.Mesh(cfg.geometry, material);
     }
-  }
-setData(key, val) {
-  const u = this._data[key];
-  if (!u) return;
+    setGlobals(globals) {
+        this.globalUniforms = globals;
+    }
 
-  const target = u.value;
-
-  // numbers (float uniforms)
-  if (typeof target === "number") {
-    u.value = val;
-    return;
-  }
-
-  // arrays → [x,y] or [x,y,z]
-  if (Array.isArray(val)) {
-    target.set(...val);
-    return;
-  }
-
-  // objects → {x,y} or {x,y,z}
-  if (val && typeof val === "object") {
-    target.set(
-      val.x ?? 0,
-      val.y ?? 0,
-      val.z ?? 0
-    );
-    return;
-  }
-
-  // fallback
-  u.value = val;
+    update(timestamp, renderer) {
+        this.uniforms.time.value = timestamp;
+        this.uniforms.resolution.value.set(
+            renderer.domElement.width,
+            renderer.domElement.height
+        );
+    }
 }
-apply(profile) {
-const data = profile.toUniforms();
 
-for ( const key in data ) {
-  this.setData(key, data[key]);
-}
-}
-  data() {
-    return this._data;
-  }
-}
 
 class AstroBodyFactory {
-    constructor(three) {
+    constructor(three, cfg) {
         this.three = three;
+        this.cfg = cfg;
+        this.geometry = new this.three.PlaneGeometry(2, 2);
     }
-    create(uniforms, shader) {
-        const starMaterial = new this.three.ShaderMaterial({
+createStar(seed) {
+  return new Star({
+    "three": this.three,
+    "geometry": this.geometry,
+    "shader": this.cfg.shader("star"),
+    "profile": new StarProfile(seed)
+  });
+}
+    createStar1(seed) {
+        const shader = this.cfg.shader("star");
+        const suniforms = new StarUniforms(this.three);
+        const profile = new StarProfile(seed);
+        const uniforms = suniforms.apply(profile).data();
+        //const uniforms = suniforms.data();
+
+        const material = new this.three.ShaderMaterial({
             uniforms,
             vertexShader: shader.vertex,
             fragmentShader: shader.fragment 
         });
-        return new this.three.Mesh(new this.three.PlaneGeometry(2, 2), starMaterial);
+        return new Star({
+            "uniforms": uniforms, 
+            "profile": profile, 
+            "mesh": new this.three.Mesh(this.geometry, material)
+        });
     }
 }
 
-const factory = new AstroBodyFactory(THREE);
+const factory = new AstroBodyFactory(THREE, config);
 
-const starUniforms = new StarUniforms(THREE);
-
-const starProfile = new StarProfile(1); // 10 is placeholder
-starUniforms.apply(starProfile);
-
-const uniforms = starUniforms.data();
-
-const star = factory.create(uniforms, config.shader("star")); 
-scene.add(star);
+const star = factory.createStar(1); 
+scene.add(star.mesh);
 
 //
 // 🌍 PLANET (simple starter shader)
 //
-const planetShader = config.shader("planet");
+/*const planetShader = config.shader("planet");
 const planetMaterial = new THREE.ShaderMaterial({
   uniforms,
   transparent: true,
@@ -194,17 +167,18 @@ const planet = new THREE.Mesh(
 
 // position near (200,200) in screen-ish space
 planet.position.set(0.6, -0.4, 0); // tweak as needed
-scene.add(planet);
+scene.add(planet);*/
 
 //
 // 🎬 LOOP
 //
 function animate(timestamp) {
-  uniforms.time.value = timestamp * 0.001;
-  uniforms.resolution.value.set(
+    star.update(timestamp * 0.001, renderer);
+  /*star.uniforms.time.value = timestamp * 0.001;
+  star.uniforms.resolution.value.set(
     renderer.domElement.width,
     renderer.domElement.height
-  );
+  );*/
 
   renderer.render(scene, camera);
   DeltaReport.log(timestamp);

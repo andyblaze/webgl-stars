@@ -1,0 +1,59 @@
+export default class StarUniforms {
+  constructor(three) {
+    this.three = three;
+    this._data = {
+      time: { value: 0 },
+      resolution: { value: new three.Vector2() },
+
+      flowDir: { value: new three.Vector2() },
+      flowSpeed: { value: 0 },
+
+      colorA: { value: new three.Vector3() },
+      colorB: { value: new three.Vector3() },
+
+      brightness: { value: 1 }
+    }
+  }
+setData(key, val) {
+  const u = this._data[key];
+  if (!u) return;
+
+  const target = u.value;
+
+  // numbers (float uniforms)
+  if (typeof target === "number") {
+    u.value = val;
+    return;
+  }
+
+  // arrays → [x,y] or [x,y,z]
+  if (Array.isArray(val)) {
+    target.set(...val);
+    return;
+  }
+
+  // objects → {x,y} or {x,y,z}
+  if (val && typeof val === "object") {
+    target.set(
+      val.x ?? 0,
+      val.y ?? 0,
+      val.z ?? 0
+    );
+    return;
+  }
+
+  // fallback
+  u.value = val;
+}
+apply(profile) {
+    const data = profile.toUniforms();
+
+    for ( const key in data ) {
+        this.setData(key, data[key]);
+    }
+    return this;
+}
+  data() {
+    return this._data;
+  }
+}
