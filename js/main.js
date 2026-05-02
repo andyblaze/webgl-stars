@@ -103,7 +103,6 @@ class Star {
         this.uniforms.time = globals.time;
         this.uniforms.resolution = globals.resolution;
     }
-
     update(timestamp, renderer) {
         this.uniforms.time.value = timestamp * 0.002;
         this.uniforms.resolution.value.set(
