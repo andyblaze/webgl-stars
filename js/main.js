@@ -29,22 +29,27 @@ resize();
 class Universe {
     constructor(three) {
         this.systems = [];
+        this.star = {};
         this.uniforms = {
             time: { value: 0 },
             resolution: { value: new three.Vector2() }
         };
     } 
     update(timestamp, renderer) {
-        this.uniforms.time.value = timestamp * 0.001;
+        /*this.uniforms.time.value = timestamp * 0.001;
         this.uniforms.resolution.value.set(
             renderer.domElement.width,
             renderer.domElement.height
-        );
+        );*/
+        this.star.update(timestamp, renderer);
     }
-
     addSystem(sys) {
         sys.setGlobals(this.uniforms);
         this.systems.push(sys);
+    }
+    addStar(s) {
+        s.setGlobals(this.uniforms);
+        this.star = s;
     }
 }
 
@@ -95,6 +100,8 @@ class Star {
     }
     setGlobals(globals) {
         this.globalUniforms = globals;
+        this.uniforms.time = globals.time;
+        this.uniforms.resolution = globals.resolution;
     }
 
     update(timestamp, renderer) {
@@ -113,37 +120,22 @@ class AstroBodyFactory {
         this.cfg = cfg;
         this.geometry = new this.three.PlaneGeometry(2, 2);
     }
-createStar(seed) {
-  return new Star({
-    "three": this.three,
-    "geometry": this.geometry,
-    "shader": this.cfg.shader("star"),
-    "profile": new StarProfile(seed)
-  });
-}
-    createStar1(seed) {
-        const shader = this.cfg.shader("star");
-        const suniforms = new StarUniforms(this.three);
-        const profile = new StarProfile(seed);
-        const uniforms = suniforms.apply(profile).data();
-        //const uniforms = suniforms.data();
-
-        const material = new this.three.ShaderMaterial({
-            uniforms,
-            vertexShader: shader.vertex,
-            fragmentShader: shader.fragment 
-        });
+    createStar(seed) {
         return new Star({
-            "uniforms": uniforms, 
-            "profile": profile, 
-            "mesh": new this.three.Mesh(this.geometry, material)
+            "three": this.three,
+            "geometry": this.geometry,
+            "shader": this.cfg.shader("star"),
+            "profile": new StarProfile(seed)
         });
     }
 }
 
+const universe = new Universe(THREE);
+
 const factory = new AstroBodyFactory(THREE, config);
 
 const star = factory.createStar(1); 
+universe.addStar(star);
 scene.add(star.mesh);
 
 //
@@ -173,7 +165,7 @@ scene.add(planet);*/
 // 🎬 LOOP
 //
 function animate(timestamp) {
-    star.update(timestamp * 0.001, renderer);
+    universe.update(timestamp * 0.001, renderer);
   /*star.uniforms.time.value = timestamp * 0.001;
   star.uniforms.resolution.value.set(
     renderer.domElement.width,
