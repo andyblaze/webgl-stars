@@ -105,7 +105,7 @@ class Star {
     }
 
     update(timestamp, renderer) {
-        this.uniforms.time.value = timestamp;
+        this.uniforms.time.value = timestamp * 0.001;
         this.uniforms.resolution.value.set(
             renderer.domElement.width,
             renderer.domElement.height
@@ -165,7 +165,7 @@ scene.add(planet);*/
 // 🎬 LOOP
 //
 function animate(timestamp) {
-    universe.update(timestamp * 0.001, renderer);
+    universe.update(timestamp, renderer);
   /*star.uniforms.time.value = timestamp * 0.001;
   star.uniforms.resolution.value.set(
     renderer.domElement.width,
