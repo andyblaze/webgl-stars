@@ -105,7 +105,7 @@ class Star {
     }
 
     update(timestamp, renderer) {
-        this.uniforms.time.value = timestamp * 0.001;
+        this.uniforms.time.value = timestamp * 0.002;
         this.uniforms.resolution.value.set(
             renderer.domElement.width,
             renderer.domElement.height
