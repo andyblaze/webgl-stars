@@ -161,9 +161,6 @@ universe.addSystem(star, [planet]);
 scene.add(star.mesh);
 scene.add(planet);
 
-//
-// 🎬 LOOP
-//
 function animate(timestamp) {
     universe.update(timestamp, renderer);
     renderer.render(scene, camera);

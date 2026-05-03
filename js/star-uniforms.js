@@ -2,15 +2,10 @@ export default class StarUniforms {
   constructor(three) {
     this.three = three;
     this._data = {
-      time: { value: 0 },
-      resolution: { value: new three.Vector2() },
-
       flowDir: { value: new three.Vector2() },
       flowSpeed: { value: 0 },
-
       colorA: { value: new three.Vector3() },
       colorB: { value: new three.Vector3() },
-
       brightness: { value: 1 }
     }
   }
