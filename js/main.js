@@ -3,6 +3,8 @@ import Shaders from "./shaders.js";
 import Config from "./config.js";
 import StarProfile from "./star-profile.js";
 import StarUniforms from "./star-uniforms.js";
+import PlanetProfile from "./planet-profile.js";
+import PlanetUniforms from "./planet-uniforms.js";
 import DeltaReport from "./delta-report.js";
 
 const config = new Config(new Shaders()); 
@@ -82,11 +84,34 @@ class System {
 }
 
 class Planet {
-    constructor() {
+    constructor(cfg) {
+        this.profile = cfg.profile;
+        const puniforms = new PlanetUniforms(cfg.three);
+        this.uniforms = puniforms.apply(this.profile).data();
 
+        const material = new cfg.three.ShaderMaterial({
+            uniforms: this.uniforms,
+            transparent: true,
+            vertexShader: cfg.shader.vertex,
+            fragmentShader: cfg.shader.fragment 
+        });
+
+        this.mesh = new cfg.three.Mesh(
+            new cfg.three.PlaneGeometry(cfg.size, cfg.size),
+            material
+        );
+
+        this.mesh.position.set(cfg.position.x, cfg.position.y, cfg.position.z); // tweak as needed  
+
+        //this.mesh = new cfg.three.Mesh(cfg.geometry, material);
     }
     setGlobals(globals) {
         this.globalUniforms = globals;
+        this.uniforms.time = globals.time;
+        this.uniforms.resolution = globals.resolution;
+    }
+    update(timestamp, renderer) {
+
     }
 }
 
@@ -128,8 +153,17 @@ class AstroBodyFactory {
             "profile": new StarProfile(seed)
         });
     }
-    createPlanet() {
-        const planetShader = this.cfg.shader("planet");
+    createPlanet(seed, star) {
+        return new Planet({
+            "three": this.three,
+            "geometry": this.geometry,
+            "shader": this.cfg.shader("planet"),
+            "profile": new PlanetProfile(seed, star),
+            "size": 0.3,
+            "position": { x: 0.6, y: -0.4, z: 0 }
+        });
+        //const planetSize = 0.3; // tweak visually
+        /*const planetShader = this.cfg.shader("planet");
         const planetMaterial = new this.three.ShaderMaterial({
         uniforms: universe.uniforms,
         transparent: true,
@@ -147,7 +181,7 @@ class AstroBodyFactory {
 
         // position near (200,200) in screen-ish space
         planet.position.set(0.6, -0.4, 0); // tweak as needed  
-        return planet;      
+        return planet;  */    
     }
 }
 
@@ -156,10 +190,10 @@ const universe = new Universe(THREE);
 const factory = new AstroBodyFactory(THREE, config);
 
 const star = factory.createStar(1); 
-const planet = factory.createPlanet();
+const planet = factory.createPlanet(1, star);
 universe.addSystem(star, [planet]);
 scene.add(star.mesh);
-scene.add(planet);
+scene.add(planet.mesh);
 
 function animate(timestamp) {
     universe.update(timestamp, renderer);

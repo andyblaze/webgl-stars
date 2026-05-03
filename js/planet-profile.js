@@ -1,14 +1,17 @@
 import AstroBodyProfile from "./astrobody-profile.js";
 
 export default class PlanetProfile extends AstroBodyProfile {
-  constructor(seed, starProfile) {
+  constructor(seed, star) {
     super(seed);
-    this.star = starProfile;
+    this.star = star;
 
     this.type = this.pickType();
-    this.size = this.generateSize();
-    this.color = this.generateColor();
+    //this.size = this.generateSize();
+    //this.color = this.generateColor();
   }
+toUniforms() {
+  return {};
+}
 
   // -------------------------
   // 🪐 Planet type (very simple)
