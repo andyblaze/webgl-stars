@@ -57,14 +57,16 @@ class Universe {
 }
 
 class System {
-    constructor(s, ps) {
+    constructor(s, ps) { console.log(ps);
         this.star = s;
         this.planets = [];
         for ( const p of ps )
             this.addPlanet(p);
     }
     setGlobals(globals) {
-        //this.globalUniforms = globals;
+        this.globalUniforms = globals;
+        this.uniforms.time = globals.time;
+        this.uniforms.resolution = globals.resolution;
 
         this.star.setGlobals(globals);
 
@@ -192,7 +194,7 @@ const factory = new AstroBodyFactory(THREE, config);
 
 const star = factory.createStar(1); 
 const planet = factory.createPlanet(1, star);
-universe.addSystem(star, [planet]);
+universe.addSystem(new System(star, [planet]));
 scene.add(star.mesh);
 scene.add(planet.mesh);
 
