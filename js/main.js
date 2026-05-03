@@ -63,7 +63,7 @@ class System {
         for ( const p of ps )
             this.addPlanet(p);
     }
-    setGlobals(globals) {
+    setGlobals(globals) { console.log("sys", globals);
         this.globalUniforms = globals;
         this.uniforms.time = globals.time;
         this.uniforms.resolution = globals.resolution;
@@ -71,7 +71,7 @@ class System {
         this.star.setGlobals(globals);
 
         for ( const p of this.planets ) {
-            p.setGlobals(globals);
+            //p.setGlobals(globals);
         }
     }
     update(timestamp, renderer) {
@@ -105,7 +105,7 @@ class Planet {
 
         this.mesh.position.set(cfg.position.x, cfg.position.y, cfg.position.z); // tweak as needed  
     }
-    setGlobals(globals) {
+    setGlobals(globals) { console.log(this.uniforms, globals);
         this.globalUniforms = globals;
         this.uniforms.time = globals.time;
         this.uniforms.resolution = globals.resolution;
