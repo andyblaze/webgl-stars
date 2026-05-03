@@ -102,8 +102,6 @@ class Planet {
         );
 
         this.mesh.position.set(cfg.position.x, cfg.position.y, cfg.position.z); // tweak as needed  
-
-        //this.mesh = new cfg.three.Mesh(cfg.geometry, material);
     }
     setGlobals(globals) {
         this.globalUniforms = globals;
@@ -135,6 +133,9 @@ class Star {
     }
     update(timestamp, renderer) {
 
+    }
+    getType() {
+        return this.profile.type;
     }
 }
 

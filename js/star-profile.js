@@ -7,7 +7,7 @@ export default class StarProfile extends AstroBodyProfile {
     this.motion = this.generateMotion();
     this.color = this.generateColor();
     this.energy = this.generateEnergy();
-    this.type = "";
+    this.type = "red";
   }
 toUniforms() {
   return {

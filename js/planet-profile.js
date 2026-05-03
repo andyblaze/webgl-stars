@@ -3,11 +3,11 @@ import AstroBodyProfile from "./astrobody-profile.js";
 export default class PlanetProfile extends AstroBodyProfile {
   constructor(seed, star) {
     super(seed);
-    this.star = star;
+    this.star = star; 
 
     this.type = this.pickType();
-    //this.size = this.generateSize();
-    //this.color = this.generateColor();
+    this.size = this.generateSize();
+    this.color = this.generateColor();
   }
 toUniforms() {
   return {};
@@ -16,7 +16,7 @@ toUniforms() {
   // -------------------------
   // 🪐 Planet type (very simple)
   // -------------------------
-  pickType() {
+  pickType() { return "earthlike";
     const r = this._rng();
 
     if (r < 0.6) return "rocky";
@@ -30,18 +30,18 @@ toUniforms() {
   generateSize() {
     const r = this._rng();
 
-    if (this.type === "rocky") return 0.1 + r() * 0.2;
-    if (this.type === "earthlike") return 0.2 + r() * 0.2;
-    return 0.4 + r() * 0.4; // gas giants bigger
+    if (this.type === "rocky") return 0.1 + r * 0.2;
+    if (this.type === "earthlike") return 0.2 + r * 0.2;
+    return 0.4 + r * 0.4; // gas giants bigger
   }
 
   // -------------------------
   // 🎨 Color (influenced by star)
   // -------------------------
-  generateColor() {
-    const r = this._rng();
+  generateColor() { 
+    const r = this._rng(); return [0.1 + r*0.2, 0.3 + r*0.4, 0.1 + r*0.2];
 
-    const starType = this.star.type; // ← this is why we added it earlier
+    const starType = this.star.getType(); // ← this is why we added it earlier
 
     let base;
 
