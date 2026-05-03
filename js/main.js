@@ -29,7 +29,7 @@ resize();
 class Universe {
     constructor(three) {
         this.systems = [];
-        this.star = {};
+        this.stars = [];
         this.uniforms = {
             time: { value: 0 },
             resolution: { value: new three.Vector2() }
@@ -41,7 +41,8 @@ class Universe {
             renderer.domElement.width,
             renderer.domElement.height
         );*/
-        this.star.update(timestamp, renderer);
+        for ( const sys of this.systems )
+            sys.update(timestamp, renderer);
     }
     addSystem(sys) {
         sys.setGlobals(this.uniforms);
@@ -59,7 +60,7 @@ class System {
         this.planets = [];
     }
     setGlobals(globals) {
-        this.globalUniforms = globals;
+        //this.globalUniforms = globals;
 
         this.star.setGlobals(globals);
 
@@ -67,8 +68,8 @@ class System {
             p.setGlobals(globals);
         }
     }
-    update() {
-
+    update(timestamp, renderer) {
+        this.star.update(timestamp, renderer);
     }
     addPlanet(p) {
         p.setGlobals(this.globalUniforms);
@@ -134,7 +135,7 @@ const universe = new Universe(THREE);
 const factory = new AstroBodyFactory(THREE, config);
 
 const star = factory.createStar(1); 
-universe.addStar(star);
+universe.addSystem(star);
 scene.add(star.mesh);
 
 //
