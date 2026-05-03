@@ -36,11 +36,11 @@ class Universe {
         };
     } 
     update(timestamp, renderer) {
-        /*this.uniforms.time.value = timestamp * 0.001;
+        this.uniforms.time.value = timestamp * 0.001;
         this.uniforms.resolution.value.set(
             renderer.domElement.width,
             renderer.domElement.height
-        );*/
+        );
         for ( const sys of this.systems )
             sys.update(timestamp, renderer);
     }
@@ -55,9 +55,11 @@ class Universe {
 }
 
 class System {
-    constructor(s) {
+    constructor(s, ps) {
         this.star = s;
         this.planets = [];
+        for ( const p of ps )
+            this.addPlanet(p);
     }
     setGlobals(globals) {
         //this.globalUniforms = globals;
@@ -70,6 +72,8 @@ class System {
     }
     update(timestamp, renderer) {
         this.star.update(timestamp, renderer);
+        for ( const p of this.planets )
+            p.update(timestamp, renderer);
     }
     addPlanet(p) {
         p.setGlobals(this.globalUniforms);
@@ -105,11 +109,7 @@ class Star {
         this.uniforms.resolution = globals.resolution;
     }
     update(timestamp, renderer) {
-        this.uniforms.time.value = timestamp * 0.002;
-        this.uniforms.resolution.value.set(
-            renderer.domElement.width,
-            renderer.domElement.height
-        );
+
     }
 }
 
@@ -128,6 +128,27 @@ class AstroBodyFactory {
             "profile": new StarProfile(seed)
         });
     }
+    createPlanet() {
+        const planetShader = this.cfg.shader("planet");
+        const planetMaterial = new this.three.ShaderMaterial({
+        uniforms: universe.uniforms,
+        transparent: true,
+        vertexShader: planetShader.vertex,
+        fragmentShader: planetShader.fragment
+        });
+
+        // radius 160 → scale relative to screen
+        const planetSize = 0.3; // tweak visually
+
+        const planet = new this.three.Mesh(
+            new this.three.PlaneGeometry(planetSize, planetSize),
+            planetMaterial
+        );
+
+        // position near (200,200) in screen-ish space
+        planet.position.set(0.6, -0.4, 0); // tweak as needed  
+        return planet;      
+    }
 }
 
 const universe = new Universe(THREE);
@@ -135,46 +156,19 @@ const universe = new Universe(THREE);
 const factory = new AstroBodyFactory(THREE, config);
 
 const star = factory.createStar(1); 
-universe.addSystem(star);
+const planet = factory.createPlanet();
+universe.addSystem(star, [planet]);
 scene.add(star.mesh);
-
-//
-// 🌍 PLANET (simple starter shader)
-//
-/*const planetShader = config.shader("planet");
-const planetMaterial = new THREE.ShaderMaterial({
-  uniforms,
-  transparent: true,
-  vertexShader: planetShader.vertex,
-  fragmentShader: planetShader.fragment
-});
-
-// radius 160 → scale relative to screen
-const planetSize = 0.3; // tweak visually
-
-const planet = new THREE.Mesh(
-  new THREE.PlaneGeometry(planetSize, planetSize),
-  planetMaterial
-);
-
-// position near (200,200) in screen-ish space
-planet.position.set(0.6, -0.4, 0); // tweak as needed
-scene.add(planet);*/
+scene.add(planet);
 
 //
 // 🎬 LOOP
 //
 function animate(timestamp) {
     universe.update(timestamp, renderer);
-  /*star.uniforms.time.value = timestamp * 0.001;
-  star.uniforms.resolution.value.set(
-    renderer.domElement.width,
-    renderer.domElement.height
-  );*/
-
-  renderer.render(scene, camera);
-  DeltaReport.log(timestamp);
-  requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+    DeltaReport.log(timestamp);
+    requestAnimationFrame(animate);
 }
 
 animate(performance.now());

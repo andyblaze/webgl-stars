@@ -38,7 +38,7 @@ export default class PlanetProfile extends AstroBodyProfile {
   generateColor() {
     const r = this._rng();
 
-    const starType = this.star.starType; // ← this is why we added it earlier
+    const starType = this.star.type; // ← this is why we added it earlier
 
     let base;
 

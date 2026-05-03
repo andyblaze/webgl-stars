@@ -7,6 +7,7 @@ export default class StarProfile extends AstroBodyProfile {
     this.motion = this.generateMotion();
     this.color = this.generateColor();
     this.energy = this.generateEnergy();
+    this.type = "";
   }
 toUniforms() {
   return {
@@ -51,14 +52,17 @@ toUniforms() {
 
     // we need a bit more randomness in types - some at all for blue ! :)
     if (type < 0.33) {
+      this.type = "red";
       // red/orange dwarf
       colorA = [1.0, 0.3 + r() * 0.2, 0.05];
       colorB = [1.0, 0.7, 0.2];
     } else if (type < 0.66) {
+      this.type = "yellow";
       // yellow star
       colorA = [1.0, 0.6 + r() * 0.2, 0.1];
       colorB = [1.0, 0.85 + r() * 0.1, 0.3 + r() * 0.1];
     } else {
+      this.type = "blue";
       // blue/white
       colorA = [0.6, 0.8, 1.0];
       colorB = [1.0, 1.0, 1.0];
