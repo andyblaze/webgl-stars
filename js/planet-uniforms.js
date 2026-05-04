@@ -2,6 +2,7 @@ export default class PlanetUniforms {
   constructor(three) {
     this.three = three;
     this._data = {
+        
     }
   }
 setData(key, val) {
