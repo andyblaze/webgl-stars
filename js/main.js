@@ -49,27 +49,7 @@ class AstroBodyFactory {
             "profile": new PlanetProfile(seed, star),
             "size": 0.3,
             "position": { x: 0.6, y: -0.4, z: 0 }
-        });
-        //const planetSize = 0.3; // tweak visually
-        /*const planetShader = this.cfg.shader("planet");
-        const planetMaterial = new this.three.ShaderMaterial({
-        uniforms: universe.uniforms,
-        transparent: true,
-        vertexShader: planetShader.vertex,
-        fragmentShader: planetShader.fragment
-        });
-
-        // radius 160 → scale relative to screen
-        const planetSize = 0.3; // tweak visually
-
-        const planet = new this.three.Mesh(
-            new this.three.PlaneGeometry(planetSize, planetSize),
-            planetMaterial
-        );
-
-        // position near (200,200) in screen-ish space
-        planet.position.set(0.6, -0.4, 0); // tweak as needed  
-        return planet;  */    
+        }); 
     }
 }
 
@@ -77,8 +57,8 @@ const universe = new Universe(THREE);
 
 const factory = new AstroBodyFactory(THREE, config);
 
-const star = factory.createStar(1); 
-const planet = factory.createPlanet(1, star);
+const star = factory.createStar(157455); 
+const planet = factory.createPlanet(157455, star);
 universe.addSystem(new System(star, [planet]));
 scene.add(star.mesh);
 scene.add(planet.mesh);

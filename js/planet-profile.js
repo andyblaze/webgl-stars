@@ -16,7 +16,7 @@ toUniforms() {
   // -------------------------
   // 🪐 Planet type (very simple)
   // -------------------------
-  pickType() { return "earthlike";
+  pickType() { 
     const r = this._rng();
 
     if (r < 0.6) return "rocky";
@@ -39,22 +39,22 @@ toUniforms() {
   // 🎨 Color (influenced by star)
   // -------------------------
   generateColor() { 
-    const r = this._rng(); return [0.1 + r*0.2, 0.3 + r*0.4, 0.1 + r*0.2];
+    const r = this._rng(); //return [0.1 + r*0.2, 0.3 + r*0.4, 0.1 + r*0.2];
 
     const starType = this.star.getType(); // ← this is why we added it earlier
 
     let base;
 
     if (this.type === "rocky") {
-      base = [0.3 + r()*0.2, 0.25 + r()*0.2, 0.2 + r()*0.2];
+      base = [0.3 + r*0.2, 0.25 + r*0.2, 0.2 + r*0.2];
     }
 
     if (this.type === "earthlike") {
-      base = [0.1 + r()*0.2, 0.3 + r()*0.4, 0.1 + r()*0.2];
+      base = [0.1 + r*0.2, 0.3 + r*0.4, 0.1 + r*0.2];
     }
 
     if (this.type === "gas") {
-      base = [0.6 + r()*0.3, 0.5 + r()*0.3, 0.3 + r()*0.3];
+      base = [0.6 + r*0.3, 0.5 + r*0.3, 0.3 + r*0.3];
     }
 
     // -------------------------

@@ -7,7 +7,7 @@ export default class StarProfile extends AstroBodyProfile {
     this.motion = this.generateMotion();
     this.color = this.generateColor();
     this.energy = this.generateEnergy();
-    this.type = "red";
+    this.type = "";
   }
 toUniforms() {
   return {
@@ -46,7 +46,7 @@ toUniforms() {
     const r = this._rng;
 
     // simple “star families”
-    const type = r();
+    const type = r(); 
 
     let colorA, colorB;
 
@@ -64,8 +64,8 @@ toUniforms() {
     } else {
       this.type = "blue";
       // blue/white
-      colorA = [0.6, 0.8, 1.0];
-      colorB = [1.0, 1.0, 1.0];
+      colorA = [0.6, 0.8, 1.0 + r() * 0.2];
+      colorB = [1.0, 1.0, 1.0 + r() * 0.2];
     }
 
     return { colorA, colorB };
