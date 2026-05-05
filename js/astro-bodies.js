@@ -120,10 +120,10 @@ export class Star extends AstroBody {
         });
         //this.mesh = new cfg.three.Mesh(cfg.geometry, material);
         this.mesh = new cfg.three.Mesh(
-            new cfg.three.PlaneGeometry(100, 100),
+            new cfg.three.PlaneGeometry(1.4, 1.4),
             material
         );
-        this.mesh.position.set(0.1, 0.1, 0);
+        this.mesh.position.set(0.41, 0.1, 0);
     }
     getType() {
         return this.profile.type;
