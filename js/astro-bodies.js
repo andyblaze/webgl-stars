@@ -45,17 +45,20 @@ export class Universe extends AstroBody {
 }
 
 export class System extends AstroBody {
-    constructor(s, ps) {
+    constructor(s, ps, scene) {
         super();
         this.star = s;
+        scene.add(this.star.mesh);
         this.planets = [];
-        for ( const p of ps )
+        for ( const p of ps ) {
+            scene.add(p.mesh);
             this.addPlanet(p);
+        }
     }
     setGlobals(globals) { 
-        this.globalUniforms = globals;
+        /*this.globalUniforms = globals;
         this.uniforms.time = globals.time;
-        this.uniforms.resolution = globals.resolution;
+        this.uniforms.resolution = globals.resolution;*/
 
         this.star.setGlobals(globals);
 
@@ -88,11 +91,18 @@ export class Planet extends AstroBody {
         });
 
         this.mesh = new cfg.three.Mesh(
-            new cfg.three.PlaneGeometry(cfg.size, cfg.size),
+            new cfg.three.PlaneGeometry(this.profile.getSize(), this.profile.getSize()),
             material
         );
+const starPos = this.profile.getStarPos();
+const orbit = this.profile.getOrbit();
 
-        this.mesh.position.set(cfg.position.x, cfg.position.y, cfg.position.z); // tweak as needed  
+this.mesh.position.set(
+    starPos.x + Math.cos(orbit.angle) * orbit.radius,
+    starPos.y + Math.sin(orbit.angle) * orbit.radius,
+    starPos.z
+);
+        //this.mesh.position.set(cfg.position.x, cfg.position.y, cfg.position.z); // tweak as needed  
     }
 }
 
@@ -108,7 +118,12 @@ export class Star extends AstroBody {
             vertexShader: cfg.shader.vertex,
             fragmentShader: cfg.shader.fragment 
         });
-        this.mesh = new cfg.three.Mesh(cfg.geometry, material);
+        //this.mesh = new cfg.three.Mesh(cfg.geometry, material);
+        this.mesh = new cfg.three.Mesh(
+            new cfg.three.PlaneGeometry(100, 100),
+            material
+        );
+        this.mesh.position.set(0.1, 0.1, 0);
     }
     getType() {
         return this.profile.type;

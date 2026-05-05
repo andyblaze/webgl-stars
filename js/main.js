@@ -31,11 +31,9 @@ const universe = new Universe(THREE);
 
 const factory = new AstroBodyFactory(THREE, config);
 
-const star = factory.createStar(157455); 
-const planet = factory.createPlanet(157455, star);
-universe.addSystem(new System(star, [planet]));
-scene.add(star.mesh);
-scene.add(planet.mesh);
+const star = factory.createStar(1); 
+const planet = factory.createPlanet(1, star);
+universe.addSystem(new System(star, [planet], scene));
 
 function animate(timestamp) {
     universe.update(timestamp, renderer);

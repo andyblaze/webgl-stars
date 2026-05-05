@@ -21,9 +21,7 @@ export default class AstroBodyFactory {
             "three": this.three,
             "geometry": this.geometry,
             "shader": this.cfg.shader("planet"),
-            "profile": new PlanetProfile(seed, star),
-            "size": 0.3,
-            "position": { x: 0.6, y: -0.4, z: 0 }
+            "profile": new PlanetProfile(seed, star)
         }); 
     }
 }

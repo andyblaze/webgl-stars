@@ -8,9 +8,27 @@ export default class PlanetProfile extends AstroBodyProfile {
     this.type = this.pickType();
     this.size = this.generateSize();
     this.color = this.generateColor();
+    this.orbit = this.generateOrbit();
   }
 toUniforms() {
   return {};
+}
+getSize()  {
+    return this.size;
+}
+getOrbit() {
+    return this.orbit;
+}
+getStarPos() {
+    return this.star.mesh.position;
+}
+generateOrbit() {
+    const r = this._rng;
+
+    return {
+        radius: 0.5 + r() * 1.5,   // distance from star
+        angle: r() * Math.PI * 2   // position around star
+    };
 }
 
   // -------------------------
