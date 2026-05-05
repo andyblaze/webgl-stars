@@ -27,7 +27,8 @@ generateOrbit() {
 
     return {
         radius: 0.5 + r() * 1.5,   // distance from star
-        angle: r() * Math.PI * 2   // position around star
+        angle: r() * Math.PI * 2,   // position around star
+        speed: Math.random()
     };
 }
 

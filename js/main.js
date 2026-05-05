@@ -36,8 +36,12 @@ const planet1 = factory.createPlanet(1, star);
 const planet2 = factory.createPlanet(2, star);
 universe.addSystem(new System(star, [planet1, planet2], scene));
 
+let lastTime = 0;
 function animate(timestamp) {
-    universe.update(timestamp, renderer);
+    const delta = timestamp - lastTime;
+    const dt = delta / 1000;
+    lastTime = timestamp;
+    universe.update(dt, timestamp, renderer);
     renderer.render(scene, camera);
     DeltaReport.log(timestamp);
     requestAnimationFrame(animate);
