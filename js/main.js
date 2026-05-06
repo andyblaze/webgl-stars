@@ -44,8 +44,8 @@ const factory = new AstroBodyFactory(THREE, config);
 
 const star = factory.createStar(1); 
 const planet1 = factory.createPlanet(1, star);
-//const planet2 = factory.createPlanet(2, star);
-universe.addSystem(new System(star, [planet1], scene));
+const planet2 = factory.createPlanet(2, star);
+universe.addSystem(new System(star, [planet1, planet2], scene));
 
 let lastTime = 0;
 function animate(timestamp) {

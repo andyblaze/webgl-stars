@@ -100,7 +100,7 @@ export class Planet extends AstroBody {
         );
 
         this.mesh = new cfg.three.Mesh(
-            geometry, //new cfg.three.PlaneGeometry(this.profile.getSize(), this.profile.getSize()),
+            geometry, 
             material
         );
         const starPos = this.profile.getStarPos();
@@ -136,19 +136,13 @@ update(dt, timestamp, renderer) {
         this.mesh.position.z
     );
 
-    this.mesh.rotation.z += dt * 0.25;
+    this.mesh.rotation.y += dt * 0.25;
 
-//const starPos = this.star.mesh.position;
 const planetPos = this.mesh.position;
 
 const lightDir = new this.three.Vector3()
     .subVectors(starPos, planetPos)
     .normalize();
-
-// convert to local space of planet
-lightDir.applyQuaternion(
-    this.mesh.quaternion.clone().invert()
-);
 
 this.uniforms.lightDir.value.copy(lightDir);
 }

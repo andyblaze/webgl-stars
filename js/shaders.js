@@ -117,7 +117,7 @@ export default class Shaders {
 
                 void main() {
                     vUv = uv;
-                    vNormal = normal;
+                    vNormal = normalize(normalMatrix * normal); //vNormal = normal;
 
                     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                 }`,
@@ -142,7 +142,7 @@ void main() {
     //float diffuse = clamp(dot(normal, lightDir), 0.0, 1.0);
     //float diffuse = max(dot(normal, normalize(lightDir)), 0.0);
 
-float diffuse = max(dot(normal, lightDir), 0.0);
+float diffuse = max(dot(vNormal, normalize(lightDir)), 0.0); // float diffuse = max(dot(normal, lightDir), 0.0);
 
 float ambient = 0.2; // tweak 0.1–0.3
 
