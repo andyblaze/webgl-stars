@@ -90,8 +90,14 @@ export class Planet extends AstroBody {
             fragmentShader: cfg.shader.fragment 
         });
 
+        const geometry = new cfg.three.SphereGeometry(
+            this.profile.getSize(),
+            32, // width segments
+            32  // height segments
+        );
+
         this.mesh = new cfg.three.Mesh(
-            new cfg.three.PlaneGeometry(this.profile.getSize(), this.profile.getSize()),
+            geometry, //new cfg.three.PlaneGeometry(this.profile.getSize(), this.profile.getSize()),
             material
         );
         const starPos = this.profile.getStarPos();
@@ -126,6 +132,8 @@ update(dt, timestamp, renderer) {
         sy + y,
         this.mesh.position.z
     );
+
+    this.mesh.rotation.x += dt * 0.25;
 }
 }
 
