@@ -3,7 +3,9 @@ import PlanetUniforms from "./planet-uniforms.js";
 
 class AstroBody {
     constructor() {
-        this.uniforms = {};
+        this.uniforms = {
+            
+        };
     }
     setGlobals(globals) { 
         this.globalUniforms = globals;
@@ -79,6 +81,7 @@ export class System extends AstroBody {
 export class Planet extends AstroBody {
     constructor(cfg) {
         super();
+        this.three = cfg.three;
         this.profile = cfg.profile;
         const puniforms = new PlanetUniforms(cfg.three);
         this.uniforms = puniforms.apply(this.profile).data();
@@ -134,6 +137,20 @@ update(dt, timestamp, renderer) {
     );
 
     this.mesh.rotation.z += dt * 0.25;
+
+//const starPos = this.star.mesh.position;
+const planetPos = this.mesh.position;
+
+const lightDir = new this.three.Vector3()
+    .subVectors(starPos, planetPos)
+    .normalize();
+
+// convert to local space of planet
+lightDir.applyQuaternion(
+    this.mesh.quaternion.clone().invert()
+);
+
+this.uniforms.lightDir.value.copy(lightDir);
 }
 }
 

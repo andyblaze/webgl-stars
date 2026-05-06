@@ -8,8 +8,16 @@ import DeltaReport from "./delta-report.js";
 const config = new Config(new Shaders()); 
 
 const scene = new THREE.Scene();
-const camera = new THREE.Camera();
-camera.position.z = 1;
+//const camera = new THREE.Camera();
+//camera.position.z = 1;
+const camera = new THREE.PerspectiveCamera(
+    60, // FOV
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100
+);
+
+camera.position.z = 2;
 
 const renderer = new THREE.WebGLRenderer({ antialias: false });
 document.body.appendChild(renderer.domElement);
@@ -22,6 +30,9 @@ function resize() {
   renderer.setSize(w * scale, h * scale, false);
   renderer.domElement.style.width = w + "px";
   renderer.domElement.style.height = h + "px";
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(window.innerWidth, window.innerHeight);
 }
 window.addEventListener("resize", resize);
 resize();
@@ -41,6 +52,8 @@ function animate(timestamp) {
     const delta = timestamp - lastTime;
     const dt = delta / 1000;
     lastTime = timestamp;
+    camera.aspect = renderer.domElement.width / renderer.domElement.height;
+camera.updateProjectionMatrix();
     universe.update(dt, timestamp, renderer);
     renderer.render(scene, camera);
     DeltaReport.log(timestamp);

@@ -2,7 +2,7 @@ export default class PlanetUniforms {
   constructor(three) {
     this.three = three;
     this._data = {
-        
+        lightDir: { value: new three.Vector3() }
     }
   }
 setData(key, val) {

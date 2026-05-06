@@ -77,7 +77,7 @@ export default class Shaders {
                     vec2 uv = vUv * 2.0 - 1.0;
 
                     // Aspect correction (keeps circle circular)
-                    uv.x *= resolution.x / resolution.y;
+                    //uv.x *= resolution.x / resolution.y;
 
                     float r = length(uv);
                     if (r > 1.0) discard;
@@ -113,54 +113,70 @@ export default class Shaders {
 
                 "vertex": `
                 varying vec2 vUv;
+                varying vec3 vNormal;
 
                 void main() {
                     vUv = uv;
+                    vNormal = normal;
+
                     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                 }`,
 
                 "fragment": `
                 precision mediump float;
 
-                varying vec2 vUv;
-                uniform vec2 resolution;
+varying vec2 vUv;
+varying vec3 vNormal;
+uniform vec3 lightDir;
 
-                ${this.commonCode}
+${this.commonCode}
 
-                void main() {
+void main() {
 
-                    vec2 uv = vUv * 2.0 - 1.0;
-                    uv.x *= resolution.x / resolution.y;
+    // ✅ REAL normal from sphere geometry
+    vec3 normal = normalize(vNormal);
 
-                    float r = length(uv);
-                    //if (r > 1.0) discard;
+    // 💡 simple light direction (you can later replace this with star position)
+    //vec3 lightDir = normalize(vec3(-0.6, 0.4, 1.0));
 
-                    // Safe sphere normal (prevents NaN at edges)
-                    float z = sqrt(max(0.0, 1.0 - r*r));
-                    vec3 normal = normalize(vec3(uv, z));
+    //float diffuse = clamp(dot(normal, lightDir), 0.0, 1.0);
+    //float diffuse = max(dot(normal, normalize(lightDir)), 0.0);
 
-                    vec3 lightDir = normalize(vec3(-0.6, 0.4, 1.0));
+float diffuse = max(dot(normal, lightDir), 0.0);
 
-                    float diffuse = clamp(dot(normal, lightDir), 0.0, 1.0);
+float ambient = 0.2; // tweak 0.1–0.3
 
-                    float continents = fbm(uv * 2.0);
-                    float detail = fbm(uv * 6.0) * 0.3;
+float lighting = diffuse + ambient;
+lighting = clamp(lighting, 0.0, 1.0);
+//vec3 col = baseColor * lighting;
 
-                    float landMask = smoothstep(0.45, 0.55, continents + detail);
+    // 🌍 use UVs ONLY for surface pattern
+    vec2 uv = vUv;
 
-                    vec3 ocean = vec3(0.05, 0.15, 0.35);
-                    vec3 land  = vec3(0.2, 0.5, 0.25);
+    float continents = fbm(uv * 4.0);
+    float detail = fbm(uv * 10.0) * 0.3;
 
-                    vec3 baseColor = mix(ocean, land, landMask);
+    float landMask = smoothstep(0.45, 0.55, continents + detail);
 
-                    vec3 col = baseColor * (diffuse * 0.9 + 0.1);
+    vec3 ocean = vec3(0.05, 0.15, 0.35);
+    vec3 land  = vec3(0.2, 0.5, 0.25);
 
-                    col *= smoothstep(-0.2, 0.3, diffuse);
+    vec3 baseColor = mix(ocean, land, landMask);
 
-                    float rim = pow(1.0 - r, 3.0);
-                    col += vec3(0.3, 0.5, 1.0) * rim * 0.4;
+    vec3 col = baseColor * lighting;
 
-                    gl_FragColor = vec4(col, 1.0);
+    // ☀️ lighting
+    //vec3 col = baseColor * (diffuse * 0.9 + 0.1);
+
+    // 🌑 night side fade
+    //col *= smoothstep(0.0, 0.2, diffuse);
+
+    // 🌌 atmosphere rim (based on view angle, not UV radius)
+    //float rim = pow(1.0 - dot(normal, vec3(0.0, 0.0, 1.0)), 3.0);
+    //col += vec3(0.3, 0.5, 1.0) * rim * 0.3;
+
+    gl_FragColor = vec4(col, 1.0);
+
                 }`
             }
         };
