@@ -133,7 +133,7 @@ update(dt, timestamp, renderer) {
         this.mesh.position.z
     );
 
-    this.mesh.rotation.x += dt * 0.25;
+    this.mesh.rotation.z += dt * 0.25;
 }
 }
 

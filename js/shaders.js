@@ -133,7 +133,7 @@ export default class Shaders {
                     uv.x *= resolution.x / resolution.y;
 
                     float r = length(uv);
-                    if (r > 1.0) discard;
+                    //if (r > 1.0) discard;
 
                     // Safe sphere normal (prevents NaN at edges)
                     float z = sqrt(max(0.0, 1.0 - r*r));
